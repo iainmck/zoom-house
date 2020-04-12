@@ -11,7 +11,7 @@
     const avatarRadius = 20;
 
     function getCurrentUser() {
-      return "Zamir Habib";
+      return document.getElementById("user").value;
     }
 
     function initRoomData(rooms) {
@@ -24,12 +24,13 @@
       return roomData;
     }
 
-    function createAvatar(text) {
+    function createAvatar(label) {
       let avatar = document.createElementNS(svgNS, "circle");
       avatar.setAttribute("class", "Avatar");
       avatar.setAttributeNS(null, "r", avatarRadius);
       avatar.setAttributeNS(null, "fill", "#73abff");
       avatar.setAttributeNS(null, "opacity", "0.75");
+      avatar.onmouseenter = function() {console.log(label)};
 
       return avatar;
     }
@@ -96,6 +97,7 @@
   </div>
   <div style="float:left; margin: 50px 0 0 50px;">
     <h3>[[ video chat here ]]</h3>
+    <input type="text" id="user" value="Zamir Habib">
   </div>
 
 </body>
