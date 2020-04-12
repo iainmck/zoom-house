@@ -1,17 +1,102 @@
 <html>
 <head>
+  <style>
+  </style>
 
+  <script type="text/javascript">
+    const svgNS = "http://www.w3.org/2000/svg";
+    let svg;
+    const rooms = ["LivingRoom", "Patio", "Hall", "Lounge", "Bedroom"];
+    let roomData = {};
+    const avatarRadius = 20;
 
+    function getCurrentUser() {
+      return "Zamir Habib";
+    }
 
+    function initRoomData(rooms) {
+      let roomData = {};
+      for (const room of rooms) {
+        roomData[room] = {
+          users: []
+        }
+      }
+      return roomData;
+    }
+
+    function createAvatar(text) {
+      let avatar = document.createElementNS(svgNS, "circle");
+      avatar.setAttribute("class", "Avatar");
+      avatar.setAttributeNS(null, "r", avatarRadius);
+      avatar.setAttributeNS(null, "fill", "#73abff");
+      avatar.setAttributeNS(null, "opacity", "0.75");
+
+      return avatar;
+    }
+
+    function placeAvatar(avatar, x, y, index) {
+      const padding = 5;
+      avatar.setAttributeNS(null, "cx", Number(x) + avatarRadius + (2*avatarRadius + padding)*index);  // 5 is
+      avatar.setAttributeNS(null, "cy", Number(y) + avatarRadius);
+
+      return avatar;
+    }
+
+    function removeAllAvatars() {
+      console.log(svg.querySelectorAll(".Avatar"));
+      svg.querySelectorAll(".Avatar").forEach(el => el.remove());
+    }
+
+    function layoutRooms(rooms, roomData) {
+      removeAllAvatars();
+
+      for (const room of rooms) {
+        let nUsersInRoom = 0;
+        for (const user of roomData[room].users) {
+          let avatar = createAvatar(user);
+
+          let roomSvg = svg.getElementById("room-" + room);
+          avatar = placeAvatar(avatar, roomSvg.getAttribute("x"), roomSvg.getAttribute("y"), nUsersInRoom);
+
+          svg.getElementsByTagName("svg")[0].appendChild(avatar);
+          nUsersInRoom += 1;
+        }
+      }
+    }
+
+    function joinRoom(roomId) {
+      roomData[roomId].users.push(getCurrentUser());
+      window.setTimeout(function() { // want to make sure the roomData is updated before doing layout
+        layoutRooms(rooms, roomData);
+      }, 0);
+    }
+
+    function addOnClickToText(svg, rooms) {
+      for (const room of rooms) {
+        let text = svg.getElementById("text-" + room);
+        text._room = room;
+        text.onclick = function(){joinRoom(this._room);};
+      }
+    }
+
+    window.onload = function() {
+      roomData = initRoomData(rooms);
+
+      const svgObj = document.getElementById("svg-object");
+      svg = svgObj.contentDocument;
+
+      addOnClickToText(svg, rooms);
+    }
+  </script>
 </head>
 <body>
 
-<div style="width:50%; float:left;">
-  <object data="house_floorplan_BOXED_v1.svg" type="image/svg+xml"></object>
-</div>
-<div style="float:left; margin: 50px 0 0 50px;">
-  <button title="Join">Add User</button>
-</div>
+  <div style="width:50%; float:left;">
+    <object id="svg-object" data="house_floorplan_BOXED_v1.svg" type="image/svg+xml">Unsupported browser.</object>
+  </div>
+  <div style="float:left; margin: 50px 0 0 50px;">
+    <h3>[[ video chat here ]]</h3>
+  </div>
 
 </body>
 </html>
